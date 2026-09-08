@@ -13,16 +13,41 @@
     height: 100%;
     background: #121212;
   }
+  .install-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin: 0;
+    color: #ffffff;
+    font-family: system-ui, sans-serif;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
 <script>
+  var isInstallMode = location.search.indexOf("install") !== -1;
+
   function goToSpotify() {
     location.replace("https://open.spotify.com/");
   }
 
+  function showInstallMessage() {
+    var p = document.createElement("p");
+    p.className = "install-message";
+    p.textContent = "Ready to install. Use the browser menu to add this to your home screen.";
+    document.body.appendChild(p);
+  }
+
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js").then(goToSpotify, goToSpotify);
+    if (isInstallMode) {
+      navigator.serviceWorker.register("./sw.js").then(showInstallMessage, showInstallMessage);
+    } else {
+      navigator.serviceWorker.register("./sw.js").then(goToSpotify, goToSpotify);
+    }
+  } else if (isInstallMode) {
+    showInstallMessage();
   } else {
     goToSpotify();
   }
